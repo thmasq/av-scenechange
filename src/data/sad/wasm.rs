@@ -73,8 +73,8 @@ pub(crate) unsafe fn get_sad_internal<T: Pixel>(
         return super::rust::get_sad_internal(src, dst, w, h, bit_depth);
     }
 
-    let stride1 = src.plane_cfg.stride;
-    let stride2 = dst.plane_cfg.stride;
+    let stride1 = src.plane_cfg.stride.get();
+    let stride2 = dst.plane_cfg.stride.get();
 
     // SAFETY: We verified size_of::<T>() == 1.
     // PlaneRegion is indexed relative to the region, so we take the pointer to
