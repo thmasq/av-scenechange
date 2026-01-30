@@ -7,6 +7,8 @@ mod rust;
 mod sse4;
 #[cfg(asm_x86_64)]
 mod ssse3;
+#[cfg(target_arch = "wasm32")]
+mod wasm;
 
 #[cfg(test)]
 mod tests;
@@ -38,9 +40,12 @@ pub(crate) fn get_satd<T: Pixel>(
         } else if #[cfg(asm_neon)] {
             // SAFETY: call to SIMD function
             unsafe { neon::get_satd_internal(src, dst, w, h, bit_depth) }
+        } else if #[cfg(target_arch = "wasm32")] {
+            // SAFETY: call to SIMD function
+            unsafe { wasm::get_satd_internal(src, dst, w, h, bit_depth) }
         }
     }
 
-    #[cfg(not(asm_neon))]
+    #[cfg(not(any(asm_neon, target_arch = "wasm32")))]
     rust::get_satd_internal(src, dst, w, h, bit_depth)
 }

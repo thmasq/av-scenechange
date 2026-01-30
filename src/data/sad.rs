@@ -3,6 +3,8 @@ mod avx2;
 mod rust;
 #[cfg(asm_x86_64)]
 mod sse2;
+#[cfg(target_arch = "wasm32")]
+mod wasm;
 
 #[cfg(test)]
 mod tests;
@@ -26,6 +28,8 @@ pub(crate) fn sad_plane<T: Pixel>(src: &Plane<T>, dst: &Plane<T>) -> u64 {
                 // SAFETY: All x86_64 CPUs have SSE2
                 unsafe { sse2::sad_plane_internal(src, dst) }
             }
+        } else if #[cfg(target_arch = "wasm32")] {
+            unsafe { wasm::sad_plane_internal(src, dst) }
         } else {
             rust::sad_plane_internal(src, dst)
         }
@@ -39,5 +43,10 @@ pub(crate) fn get_sad<T: Pixel>(
     h: usize,
     bit_depth: usize,
 ) -> u32 {
+    #[cfg(target_arch = "wasm32")]
+    unsafe {
+        return wasm::get_sad_internal(plane_org, plane_ref, w, h, bit_depth);
+    }
+    #[cfg(not(target_arch = "wasm32"))]
     rust::get_sad_internal(plane_org, plane_ref, w, h, bit_depth)
 }
