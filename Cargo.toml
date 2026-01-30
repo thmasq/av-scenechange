@@ -33,7 +33,6 @@ av-decoders = "0.9.0"
 cfg-if = "1.0.4"
 clap = { version = "4.5.53", features = ["derive"], optional = true }
 console = { version = "0.16.1", optional = true }
-cpufeatures = "0.2.17"
 fern = { version = "0.7.1", optional = true }
 libc = { version = "0.2.177", optional = true }
 log = { version = "0.4.28" }
@@ -197,3 +196,6 @@ missing_docs = "warn"
 level = "warn"
 # These custom cfgs are expected, so tell rustc not to output warnings for them
 check-cfg = ["cfg(asm_x86_64)", "cfg(asm_neon)"]
+
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+cpufeatures = "0.2.17"
