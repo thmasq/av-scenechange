@@ -19,6 +19,7 @@ use crate::{
 };
 
 mod fast;
+mod histogram;
 mod importance;
 mod inter;
 mod intra;
@@ -290,6 +291,7 @@ impl<T: Pixel> SceneChangeDetector<T> {
         let mut result = match self.scene_detection_mode {
             SceneDetectionSpeed::Fast => self.fast_scenecut(frame1, frame2),
             SceneDetectionSpeed::Standard => self.cost_scenecut(frame1, frame2, input_frameno),
+            SceneDetectionSpeed::Histogram => self.histogram_scenecut(frame1, frame2),
             _ => unreachable!(),
         };
 

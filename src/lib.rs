@@ -270,6 +270,8 @@ pub enum SceneDetectionSpeed {
     Fast,
     /// Scene detection using frame costs and motion vectors
     Standard,
+    /// Scene detection using color histograms (best for animation/GIFs)
+    Histogram,
     /// Do not perform scenecut detection, only place keyframes at fixed
     /// intervals
     None,
