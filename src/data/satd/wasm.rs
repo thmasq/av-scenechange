@@ -25,17 +25,19 @@ pub(crate) unsafe fn get_satd_internal<T: Pixel>(
 
     let mut v = [i32x4_splat(0); 8];
     for i in 0..8 {
-        let r1 = v128_load64_zero(ptr1.add(i * stride1) as *const u64);
-        let r2 = v128_load64_zero(ptr2.add(i * stride2) as *const u64);
+        let r1 = unsafe { v128_load64_zero(ptr1.add(i * stride1) as *const u64) };
+        let r2 = unsafe { v128_load64_zero(ptr2.add(i * stride2) as *const u64) };
 
         let r1_16 = u16x8_extend_low_u8x16(r1);
         let r2_16 = u16x8_extend_low_u8x16(r2);
         v[i] = i16x8_sub(r1_16 as v128, r2_16 as v128);
     }
 
-    hadamard_butterfly(&mut v);
-    transpose_8x8_i16(&mut v);
-    hadamard_butterfly(&mut v);
+    unsafe {
+        hadamard_butterfly(&mut v);
+        transpose_8x8_i16(&mut v);
+        hadamard_butterfly(&mut v);
+    }
 
     let mut sum = u32x4_splat(0);
     for i in 0..8 {

@@ -26,14 +26,14 @@ pub(crate) unsafe fn sad_plane_internal<T: Pixel>(src: &Plane<T>, dst: &Plane<T>
     let mut sum_u64 = 0u64;
 
     for y in 0..n_rows {
-        let row1 = ptr1.add(y * stride1);
-        let row2 = ptr2.add(y * stride2);
+        let row1 = unsafe { ptr1.add(y * stride1) };
+        let row2 = unsafe { ptr2.add(y * stride2) };
         let mut x = 0;
 
         let mut row_sum = u32x4_splat(0);
         while x + 16 <= n_cols {
-            let a = v128_load(row1.add(x) as *const v128);
-            let b = v128_load(row2.add(x) as *const v128);
+            let a = unsafe { v128_load(row1.add(x) as *const v128) };
+            let b = unsafe { v128_load(row2.add(x) as *const v128) };
 
             let diff = v128_or(u8x16_sub_sat(a, b), u8x16_sub_sat(b, a));
 
@@ -52,8 +52,8 @@ pub(crate) unsafe fn sad_plane_internal<T: Pixel>(src: &Plane<T>, dst: &Plane<T>
             + i32x4_extract_lane::<3>(row_sum)) as u64;
 
         while x < n_cols {
-            let a = *row1.add(x) as i32;
-            let b = *row2.add(x) as i32;
+            let a = unsafe { *row1.add(x) } as i32;
+            let b = unsafe { *row2.add(x) } as i32;
             sum_u64 += (a - b).abs() as u64;
             x += 1;
         }
@@ -85,8 +85,8 @@ pub(crate) unsafe fn get_sad_internal<T: Pixel>(
     let mut sum = u32x4_splat(0);
 
     for i in 0..8 {
-        let r1 = v128_load64_zero(ptr1.add(i * stride1) as *const u64);
-        let r2 = v128_load64_zero(ptr2.add(i * stride2) as *const u64);
+        let r1 = unsafe { v128_load64_zero(ptr1.add(i * stride1) as *const u64) };
+        let r2 = unsafe { v128_load64_zero(ptr2.add(i * stride2) as *const u64) };
 
         let diff = v128_or(u8x16_sub_sat(r1, r2), u8x16_sub_sat(r2, r1));
 
