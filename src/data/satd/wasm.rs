@@ -49,7 +49,7 @@ pub(crate) unsafe fn get_satd_internal<T: Pixel>(
         + i32x4_extract_lane::<1>(sum)
         + i32x4_extract_lane::<2>(sum)
         + i32x4_extract_lane::<3>(sum)) as u32
-        / 2
+        >> 3
 }
 
 unsafe fn hadamard_butterfly(v: &mut [v128; 8]) {
